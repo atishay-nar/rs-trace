@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# cursor stuff
+AGENTS.md 
+CLAUDE.md
+
+# db
+prisma/dev.db
+prisma/*.db
