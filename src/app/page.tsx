@@ -1,7 +1,51 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+
+type Paper = {
+  id: string;
+  title: string;
+  authors: string;
+  source: string;
+  createdAt: string;
+};
+
 export default function Home() {
-  return ( 
-  <div>
-    <h1>Hello World</h1>
-  </div>
+  const [papers, setPapers] = useState<Paper[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/papers")
+      .then((res) => res.json())
+      .then((data) => {
+        setPapers(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  return (
+    <div>
+      <h1>Research Tracker</h1>
+      <p>
+        <Link href="/add">Add a paper</Link>
+      </p>
+
+      <h2>Your papers</h2>
+      {loading ? (
+        <p>Loading...</p>
+      ) : papers.length === 0 ? (
+        <p>No papers yet. Add one above.</p>
+      ) : (
+        <ul>
+          {papers.map((paper) => (
+            <li key={paper.id}>
+              <strong>{paper.title}</strong> — {paper.authors} ({paper.source})
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
