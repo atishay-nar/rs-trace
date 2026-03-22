@@ -25,6 +25,13 @@ export default function Home() {
 
   }, []);
 
+  async function handleDelete(id: string) {
+    const res = await fetch(`/api/papers/${id}`, { method: "DELETE" });
+    if (res.ok) {
+      setPapers((prev) => prev.filter((p) => p.id !== id));
+    }
+  }
+
   return (
     <div>
       <h1>Research Tracker</h1>
@@ -39,6 +46,8 @@ export default function Home() {
           {papers.map((paper) => (
             <li key={paper.id}>
               <strong>{paper.title}</strong> — {paper.authors} ({paper.source})
+              {" "}
+              <button onClick={() => handleDelete(paper.id)}>Delete</button>
             </li>
           ))}
         </ul>
