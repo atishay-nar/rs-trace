@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { Suggestions } from "./Suggestions";
+
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -33,6 +35,7 @@ export default async function ProjectPage({ params }: Props) {
           ))}
         </ul>
       )}
+      <Suggestions projectId={project.id} />
     </div>
   );
 }
