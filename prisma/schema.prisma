@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Paper {
-  id        String  @id @default(cuid())
+  id        String   @id @default(cuid())
   title     String
   authors   String
   abstract  String?
@@ -24,5 +24,4 @@ model Paper {
   pdfUrl    String?
   url       String?
   createdAt DateTime @default(now())
-
 }

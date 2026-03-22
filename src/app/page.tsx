@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 type Paper = {
@@ -8,8 +8,7 @@ type Paper = {
   title: string;
   authors: string;
   source: string;
-  createdAt: string;
-};
+}
 
 export default function Home() {
   const [papers, setPapers] = useState<Paper[]>([]);
@@ -23,15 +22,13 @@ export default function Home() {
         setLoading(false);
       })
       .catch(() => setLoading(false));
+
   }, []);
 
   return (
     <div>
       <h1>Research Tracker</h1>
-      <p>
-        <Link href="/add">Add a paper</Link>
-      </p>
-
+      <p><Link href="/add">Add a paper</Link></p>
       <h2>Your papers</h2>
       {loading ? (
         <p>Loading...</p>
