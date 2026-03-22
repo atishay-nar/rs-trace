@@ -22,16 +22,18 @@ model Project {
 }
 
 model Paper {
-  id        String   @id @default(cuid())
-  title     String
-  authors   String
-  abstract  String?
-  doi       String?
-  arxivId   String?
-  source    String
-  pdfUrl    String?
-  url       String?
-  projectId String?
-  project   Project? @relation(fields: [projectId], references: [id])
+  id                    String   @id @default(cuid())
+  title                 String
+  authors               String
+  abstract              String?
+  doi                   String?
+  arxivId               String?
+  source                String
+  pdfUrl                String?
+  url                   String?
+  projectId             String?
+  project               Project? @relation(fields: [projectId], references: [id])
+  relevanceScore        Float?
+  relevanceExplanation  String?
   createdAt DateTime @default(now())
 }

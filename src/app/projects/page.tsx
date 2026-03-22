@@ -34,7 +34,7 @@ return (
         <ul>
           {projects.map((p) => (
             <li key={p.id}>
-              <strong>{p.name}</strong>
+              <Link href={`/projects/${p.id}`}><strong>{p.name}</strong></Link>
               {p.description && <p>{p.description}</p>}
             </li>
           ))}

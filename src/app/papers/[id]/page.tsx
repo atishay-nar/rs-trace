@@ -29,7 +29,10 @@ export default async function PaperPage({ params }: Props) {
           )}
         </div>
       )}
-      {paper.abstract && <p>{paper.abstract}</p>}
+      {paper.relevanceScore != null && (
+      <p>Relevance to project: {paper.relevanceScore}/10 — <i>{paper.relevanceExplanation}</i></p>
+      )}
+      {paper.abstract && <p>Abstract: {paper.abstract}</p>}
       {paper.url && (
         <a href={paper.url} target="_blank" rel="noopener noreferrer">View paper</a>
       )}
