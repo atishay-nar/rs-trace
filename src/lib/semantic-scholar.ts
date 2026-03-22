@@ -48,8 +48,7 @@ export async function getRecommendations(
           title: p.title ?? "Unknown",
           authors: p.authors?.map((a) => a.name ?? "").filter(Boolean).join(", ") ?? "",
           abstract: p.abstract ?? null,
-          url: p.url ?? (doi ? `https://doi.org/${doi}` : arxivId ? `https://arxiv.org/abs/${arxivId}` : "#"),
-        });
+          url: (arxivId ? `https://arxiv.org/abs/${arxivId}` : doi ? `https://doi.org/${doi}` : null) ?? p.url ?? "#",        });
       }
       return suggestions;
 }

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { formatAuthors } from "@/lib/format-authors";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -13,32 +14,65 @@ export default async function PaperPage({ params }: Props) {
 
   if (!paper) notFound();
 
-  const authors = JSON.parse(paper.authors) as string[];
+  const authorsFormatted = formatAuthors(paper.authors);
 
   return (
-    <div>
-      <p><Link href="/">← Back</Link></p>
-      <h1>{paper.title}</h1>
-      <p>By: {authors.join(", ")}</p>
-      <p>Source: {paper.source}</p>
+    <div className="space-y-8">
+      <Link
+        href="/"
+        className="inline-flex items-center gap-1 text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+      >
+        ← Back
+      </Link>
+      <header className="pb-6 border-b border-[var(--border)]">
+        <h1 className="text-2xl font-semibold tracking-tight leading-tight">{paper.title}</h1>
+        <p className="text-[var(--muted)] mt-2">{authorsFormatted}</p>
+        <p className="text-sm text-[var(--muted)] mt-1">{paper.source}</p>
+      </header>
       {paper.project && (
-        <div>
-          <p>Project: {paper.project.name}</p>
+        <div className="p-4 rounded-lg border border-[var(--border)] bg-[var(--card)]">
+          <p className="font-medium">Project: {paper.project.name}</p>
           {paper.project.description && (
-            <p>Project description: {paper.project.description}</p>
+            <p className="text-sm text-[var(--muted)] mt-1">{paper.project.description}</p>
           )}
         </div>
       )}
       {paper.relevanceScore != null && (
-      <p>Relevance to project: {paper.relevanceScore}/10 — <i>{paper.relevanceExplanation}</i></p>
+        <div className="p-4 rounded-lg border border-[var(--border)] bg-[var(--card)]">
+          <p className="font-medium">Relevance: {paper.relevanceScore}/10</p>
+          {paper.relevanceExplanation && (
+            <p className="text-sm text-[var(--muted)] mt-1 italic">{paper.relevanceExplanation}</p>
+          )}
+        </div>
       )}
-      {paper.abstract && <p>Abstract: {paper.abstract}</p>}
-      {paper.url && (
-        <a href={paper.url} target="_blank" rel="noopener noreferrer">View paper</a>
+      {paper.abstract && (
+        <div className="p-4 rounded-lg border border-[var(--border)] bg-[var(--card)]">
+          <h2 className="text-sm font-medium text-[var(--muted)] mb-2">Abstract</h2>
+          <p className="text-sm leading-relaxed">{paper.abstract}</p>
+        </div>
       )}
-      {paper.pdfUrl && (
-        <> · <a href={paper.pdfUrl} target="_blank" rel="noopener noreferrer">PDF</a></>
-      )}
+      <div className="flex flex-wrap gap-4 pt-2">
+        {paper.url && (
+          <a
+            href={paper.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[var(--accent)] hover:underline text-sm font-medium"
+          >
+            View paper
+          </a>
+        )}
+        {paper.pdfUrl && (
+          <a
+            href={paper.pdfUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[var(--accent)] hover:underline text-sm font-medium"
+          >
+            PDF
+          </a>
+        )}
+      </div>
     </div>
   );
 }

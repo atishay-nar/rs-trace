@@ -30,29 +30,48 @@ export default function NewProject() {
   }
 
   return (
-    <div>
-      <p><Link href="/projects">← Back</Link></p>
-      <h1>New project</h1>
-      <form onSubmit={handleSubmit}>
+    <div className="space-y-6">
+      <Link
+        href="/projects"
+        className="inline-flex items-center gap-1 text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+      >
+        ← Back
+      </Link>
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">New project</h1>
+      </div>
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label>Name</label>
+          <label htmlFor="name" className="block text-sm font-medium mb-2">
+            Name
+          </label>
           <input
+            id="name"
             type="text"
             placeholder="Project name"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            className="w-full px-4 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--card)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
           />
         </div>
         <div>
-          <label>Description (used for relevance extraction)</label>
+          <label htmlFor="description" className="block text-sm font-medium mb-2">
+            Description (used for relevance extraction)
+          </label>
           <textarea
+            id="description"
             placeholder="What is this project about? e.g. Studying diffusion models for image generation"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={4}
+            className="w-full px-4 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--card)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] resize-y"
           />
         </div>
-        <button type="submit" disabled={loading}>
+        <button
+          type="submit"
+          disabled={loading}
+          className="px-4 py-2.5 rounded-lg bg-[var(--accent)] text-white font-medium hover:bg-[var(--accent-hover)] disabled:opacity-50 transition-colors"
+        >
           {loading ? "Creating..." : "Create"}
         </button>
       </form>

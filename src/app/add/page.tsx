@@ -47,21 +47,42 @@ export default function AddPaper() {
   }
 
   return (
-    <div>
-      <p><Link href="/">← Back</Link></p>
-      <h1>Add a paper</h1>
-      <p>Paste a DOI or arXiv ID. We fetch the details for you.</p>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="e.g. 10.1234/example or 2301.12345"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-        />
+    <div className="space-y-6">
+      <Link
+        href="/"
+        className="inline-flex items-center gap-1 text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+      >
+        ← Back
+      </Link>
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">Add a paper</h1>
+        <p className="text-[var(--muted)] mt-1">Paste a DOI or arXiv ID. We fetch the details for you.</p>
+      </div>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div>
+          <label htmlFor="input" className="block text-sm font-medium mb-2">
+            DOI or arXiv ID
+          </label>
+          <input
+            id="input"
+            type="text"
+            placeholder="e.g. 10.1234/example or 2301.12345"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            className="w-full px-4 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--card)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+          />
+        </div>
         {projects.length > 0 && (
           <div>
-            <label>Project (optional)</label>
-            <select value={projectId} onChange={(e) => setProjectId(e.target.value)}>
+            <label htmlFor="project" className="block text-sm font-medium mb-2">
+              Project (optional)
+            </label>
+            <select
+              id="project"
+              value={projectId}
+              onChange={(e) => setProjectId(e.target.value)}
+              className="w-full px-4 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--card)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+            >
               <option value="">None</option>
               {projects.map((p) => (
                 <option key={p.id} value={p.id}>{p.name}</option>
@@ -69,8 +90,14 @@ export default function AddPaper() {
             </select>
           </div>
         )}
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <button type="submit" disabled={loading}>
+        {error && (
+          <p className="text-sm text-red-500">{error}</p>
+        )}
+        <button
+          type="submit"
+          disabled={loading}
+          className="px-4 py-2.5 rounded-lg bg-[var(--accent)] text-white font-medium hover:bg-[var(--accent-hover)] disabled:opacity-50 transition-colors"
+        >
           {loading ? "Fetching..." : "Add paper"}
         </button>
       </form>

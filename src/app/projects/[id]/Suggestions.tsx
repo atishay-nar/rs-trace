@@ -60,22 +60,41 @@ export function Suggestions({ projectId }: { projectId: string }) {
   const canAdd = (s: Suggestion) => s.arxivId ?? s.doi;
 
   return (
-    <div>
-      <h2>Suggestions</h2>
-      <button onClick={fetchSuggestions} disabled={loading}>
+    <section>
+      <h2 className="text-lg font-medium text-[var(--muted)] mb-4">Suggestions</h2>
+      <button
+        onClick={fetchSuggestions}
+        disabled={loading}
+        className="px-4 py-2 rounded-lg border border-[var(--border)] bg-[var(--card)] hover:border-[var(--muted)] disabled:opacity-50 transition-colors text-sm font-medium"
+      >
         {loading ? "Loading..." : "Get suggestions"}
       </button>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && (
+        <p className="text-sm text-red-500 mt-2">{error}</p>
+      )}
       {suggestions.length > 0 && (
-        <ul>
+        <ul className="space-y-3 mt-4">
           {suggestions.map((s) => (
-            <li key={s.title + (s.arxivId ?? s.doi ?? "")}>
-              <a href={s.url} target="_blank" rel="noopener noreferrer">{s.title}</a>
-              {s.authors && <span> — {s.authors}</span>}
+            <li
+              key={s.title + (s.arxivId ?? s.doi ?? "")}
+              className="p-4 rounded-lg border border-[var(--border)] bg-[var(--card)]"
+            >
+              <a
+                href={s.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium hover:text-[var(--accent)] transition-colors"
+              >
+                {s.title}
+              </a>
+              {s.authors && (
+                <p className="text-sm text-[var(--muted)] mt-1">{s.authors}</p>
+              )}
               <button
                 type="button"
                 onClick={() => addToProject(s)}
                 disabled={!canAdd(s) || addingId === s.title}
+                className="mt-2 text-sm px-3 py-1.5 rounded bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] disabled:opacity-50 transition-colors"
               >
                 {addingId === s.title ? "Adding..." : "Add to project"}
               </button>
@@ -83,6 +102,6 @@ export function Suggestions({ projectId }: { projectId: string }) {
           ))}
         </ul>
       )}
-    </div>
+    </section>
   );
 }
