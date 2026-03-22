@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Suggestions } from "./Suggestions";
+import { DeleteProjectButton } from "./DeleteProjectButton";
 
 
 type Props = { params: Promise<{ id: string }> };
@@ -23,11 +24,14 @@ export default async function ProjectPage({ params }: Props) {
       >
         ← Back
       </Link>
-      <header>
-        <h1 className="text-2xl font-semibold tracking-tight">{project.name}</h1>
-        {project.description && (
-          <p className="text-[var(--muted)] mt-2">{project.description}</p>
-        )}
+      <header className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">{project.name}</h1>
+          {project.description && (
+            <p className="text-[var(--muted)] mt-2">{project.description}</p>
+          )}
+        </div>
+        <DeleteProjectButton projectId={project.id} />
       </header>
       <section>
         <h2 className="text-lg font-medium text-[var(--muted)] mb-4">Papers</h2>

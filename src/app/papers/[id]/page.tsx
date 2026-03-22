@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatAuthors } from "@/lib/format-authors";
+import { ProjectSelector } from "./ProjectSelector";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -29,12 +30,11 @@ export default async function PaperPage({ params }: Props) {
         <p className="text-[var(--muted)] mt-2">{authorsFormatted}</p>
         <p className="text-sm text-[var(--muted)] mt-1">{paper.source}</p>
       </header>
-      {paper.project && (
+      <ProjectSelector paperId={paper.id} currentProjectId={paper.projectId} />
+      {paper.project?.description && (
         <div className="p-4 rounded-lg border border-[var(--border)] bg-[var(--card)]">
-          <p className="font-medium">Project: {paper.project.name}</p>
-          {paper.project.description && (
-            <p className="text-sm text-[var(--muted)] mt-1">{paper.project.description}</p>
-          )}
+          <p className="text-sm font-medium text-[var(--muted)]">Project description</p>
+          <p className="text-sm mt-1">{paper.project.description}</p>
         </div>
       )}
       {paper.relevanceScore != null && (
