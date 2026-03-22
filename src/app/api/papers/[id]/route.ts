@@ -3,6 +3,20 @@ import { prisma } from "@/lib/prisma";
 
 type RouteParams = { params: Promise<{ id: string }> };
 
+export async function GET(_request: Request, { params }: RouteParams) {
+  const { id } = await params;
+  const paper = await prisma.paper.findUnique({ 
+    where: { id },
+    include: {project: true},
+   });
+
+   if (!paper) {
+    return NextResponse.json({ error: "Paper not found" }, { status: 404 });
+   }
+
+   return NextResponse.json(paper);
+}
+
 export async function DELETE(_request: Request, { params }: RouteParams) {
   const { id } = await params;
   try {

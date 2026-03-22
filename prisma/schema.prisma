@@ -13,6 +13,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Project {
+  id          String @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  papers      Paper[]
+}
+
 model Paper {
   id        String   @id @default(cuid())
   title     String
@@ -23,5 +31,7 @@ model Paper {
   source    String
   pdfUrl    String?
   url       String?
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
   createdAt DateTime @default(now())
 }

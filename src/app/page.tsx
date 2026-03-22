@@ -8,7 +8,8 @@ type Paper = {
   title: string;
   authors: string;
   source: string;
-}
+  project?: { name: string } | null;
+};
 
 export default function Home() {
   const [papers, setPapers] = useState<Paper[]>([]);
@@ -22,7 +23,6 @@ export default function Home() {
         setLoading(false);
       })
       .catch(() => setLoading(false));
-
   }, []);
 
   async function handleDelete(id: string) {
@@ -35,7 +35,9 @@ export default function Home() {
   return (
     <div>
       <h1>Research Tracker</h1>
-      <p><Link href="/add">Add a paper</Link></p>
+      <p>
+        <Link href="/add">Add a paper</Link> · <Link href="/projects">Projects</Link>
+      </p>
       <h2>Your papers</h2>
       {loading ? (
         <p>Loading...</p>
@@ -45,7 +47,9 @@ export default function Home() {
         <ul>
           {papers.map((paper) => (
             <li key={paper.id}>
-              <strong>{paper.title}</strong> — {paper.authors} ({paper.source})
+              <Link href={`/papers/${paper.id}`}><strong>{paper.title}</strong></Link>
+              {" "}— {paper.authors} ({paper.source})
+              {paper.project && ` · ${paper.project.name}`}
               {" "}
               <button onClick={() => handleDelete(paper.id)}>Delete</button>
             </li>

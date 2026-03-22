@@ -4,7 +4,8 @@ import { resolvePaper } from "@/lib/resolve-paper";
 
 export async function GET() {
     const papers = await prisma.paper.findMany({
-        orderBy: {createdAt: "desc"}
+        orderBy: {createdAt: "desc"},
+        include: {project: true},
     });
     return NextResponse.json(papers);
 }
@@ -45,6 +46,7 @@ export async function POST(request: Request) {
             source: resolved.source,
             pdfUrl: resolved.pdfUrl,
             url: resolved.url,
+            projectId: body?.projectId,
         },
     });
 
