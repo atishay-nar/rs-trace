@@ -49,3 +49,7 @@ RAG
 
 # for pdfs
 /uploads/
+
+# local sqlite database (use separate DB for production)
+/prisma/*.db
+/prisma/*.db-journal
