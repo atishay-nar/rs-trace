@@ -6,10 +6,21 @@ type RouteParams = { params: Promise<{ id: string }> };
 export async function DELETE(_req: Request, { params }: RouteParams) {
   const { id } = await params;
   try {
-    await prisma.paper.updateMany({
+    const links = await prisma.projectPaper.findMany({
       where: { projectId: id },
-      data: { projectId: null },
+      select: { paperId: true },
     });
+    const paperIds = links.map((l) => l.paperId);
+
+    for (const paperId of paperIds) {
+      const otherProjects = await prisma.projectPaper.count({
+        where: { paperId, projectId: { not: id } },
+      });
+      if (otherProjects === 0) {
+        await prisma.paper.delete({ where: { id: paperId } });
+      }
+    }
+
     await prisma.project.delete({
       where: { id },
     });

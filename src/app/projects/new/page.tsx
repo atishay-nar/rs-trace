@@ -23,7 +23,7 @@ export default function NewProject() {
           description: description.trim() || undefined,
         }),
       });
-      if (res.ok) router.push("/projects");
+      if (res.ok) router.push("/");
     } finally {
       setLoading(false);
     }
@@ -32,7 +32,7 @@ export default function NewProject() {
   return (
     <div className="space-y-6">
       <Link
-        href="/projects"
+        href="/"
         className="inline-flex items-center gap-1 text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
       >
         ← Back

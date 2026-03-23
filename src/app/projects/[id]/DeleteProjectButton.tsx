@@ -5,7 +5,7 @@ export function DeleteProjectButton({ projectId }: { projectId: string }) {
     if (!confirm("Delete this project? Papers will be kept but unassigned from it.")) return;
     const res = await fetch(`/api/projects/${projectId}`, { method: "DELETE" });
     if (res.ok) {
-      window.location.href = "/projects";
+      window.location.href = "/";
     }
   }
 

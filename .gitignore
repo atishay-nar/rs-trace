@@ -44,3 +44,8 @@ next-env.d.ts
 # cursor stuff
 AGENTS.md
 CLAUDE.md
+.cursor/*
+RAG
+
+# for pdfs
+/uploads/

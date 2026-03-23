@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatAuthors } from "@/lib/format-authors";
-import { ProjectSelector } from "./ProjectSelector";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -10,12 +9,15 @@ export default async function PaperPage({ params }: Props) {
   const { id } = await params;
   const paper = await prisma.paper.findUnique({
     where: { id },
-    include: { project: true },
+    include: { projects: { include: { project: true } } },
   });
 
   if (!paper) notFound();
 
   const authorsFormatted = formatAuthors(paper.authors);
+  const firstProject = paper.projects[0];
+  const relevanceScore = firstProject?.relevanceScore ?? paper.relevanceScore;
+  const relevanceExplanation = firstProject?.relevanceExplanation ?? paper.relevanceExplanation;
 
   return (
     <div className="space-y-8">
@@ -26,22 +28,38 @@ export default async function PaperPage({ params }: Props) {
         ← Back
       </Link>
       <header className="pb-6 border-b border-[var(--border)]">
-        <h1 className="text-2xl font-semibold tracking-tight leading-tight">{paper.title}</h1>
-        <p className="text-[var(--muted)] mt-2">{authorsFormatted}</p>
+        <h1 className="text-2xl font-semibold tracking-tight leading-tight">{paper.title ?? "Untitled"}</h1>
+        {authorsFormatted && <p className="text-[var(--muted)] mt-2">{authorsFormatted}</p>}
         <p className="text-sm text-[var(--muted)] mt-1">{paper.source}</p>
       </header>
-      <ProjectSelector paperId={paper.id} currentProjectId={paper.projectId} />
-      {paper.project?.description && (
+      {paper.projects.length > 0 && (
         <div className="p-4 rounded-lg border border-[var(--border)] bg-[var(--card)]">
-          <p className="text-sm font-medium text-[var(--muted)]">Project description</p>
-          <p className="text-sm mt-1">{paper.project.description}</p>
+          <p className="text-sm font-medium text-[var(--muted)]">Projects</p>
+          <ul className="text-sm mt-1 space-y-1">
+            {paper.projects.map((pp) => (
+              <li key={pp.projectId}>
+                <Link
+                  href={`/projects/${pp.projectId}`}
+                  className="text-[var(--accent)] hover:underline"
+                >
+                  {pp.project.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
-      {paper.relevanceScore != null && (
+      {firstProject?.project?.description && (
         <div className="p-4 rounded-lg border border-[var(--border)] bg-[var(--card)]">
-          <p className="font-medium">Relevance: {paper.relevanceScore}/10</p>
-          {paper.relevanceExplanation && (
-            <p className="text-sm text-[var(--muted)] mt-1 italic">{paper.relevanceExplanation}</p>
+          <p className="text-sm font-medium text-[var(--muted)]">Project description</p>
+          <p className="text-sm mt-1">{firstProject.project.description}</p>
+        </div>
+      )}
+      {relevanceScore != null && (
+        <div className="p-4 rounded-lg border border-[var(--border)] bg-[var(--card)]">
+          <p className="font-medium">Relevance: {relevanceScore}/10</p>
+          {relevanceExplanation && (
+            <p className="text-sm text-[var(--muted)] mt-1 italic">{relevanceExplanation}</p>
           )}
         </div>
       )}

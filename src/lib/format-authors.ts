@@ -1,4 +1,5 @@
-export function formatAuthors(authorsJson: string, maxDisplay = 5): string {
+export function formatAuthors(authorsJson: string | null, maxDisplay = 5): string {
+  if (!authorsJson) return "";
   try {
     const arr = JSON.parse(authorsJson) as string[];
     if (!arr?.length) return authorsJson;
