@@ -5,6 +5,8 @@ import { Suggestions } from "./Suggestions";
 import { DeleteProjectButton } from "./DeleteProjectButton";
 import { RemovePaperButton } from "./RemovePaperButton";
 
+export const dynamic = "force-dynamic";
+
 type Props = { params: Promise<{ id: string }> };
 
 export default async function ProjectPage({ params }: Props) {

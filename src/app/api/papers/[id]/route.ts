@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { extractRelevance } from "@/lib/extract-relevance";
 
+export const dynamic = "force-dynamic";
 
 type RouteParams = { params: Promise<{ id: string }> };
 

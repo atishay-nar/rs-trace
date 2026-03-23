@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { resolvePaper } from "@/lib/resolve-paper";
 import { extractRelevance } from "@/lib/extract-relevance";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
     const papers = await prisma.paper.findMany({
         orderBy: {createdAt: "desc"},
