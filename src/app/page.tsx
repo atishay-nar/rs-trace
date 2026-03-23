@@ -12,11 +12,20 @@ type Project = {
 export default function Home() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/projects")
-      .then((r) => r.json())
-      .then(setProjects)
+      .then((r) => r.json().then((data) => ({ ok: r.ok, data })))
+      .then(({ ok, data }) => {
+        if (ok && Array.isArray(data)) {
+          setProjects(data);
+          setError(null);
+        } else {
+          setError((data as { error?: string })?.error ?? "Failed to load");
+        }
+      })
+      .catch(() => setError("Network error"))
       .finally(() => setLoading(false));
   }, []);
 
@@ -36,6 +45,8 @@ export default function Home() {
         <h2 className="text-lg font-medium text-[var(--muted)] mb-4">Projects</h2>
         {loading ? (
           <p className="text-[var(--muted)]">Loading...</p>
+        ) : error ? (
+          <p className="text-red-500 text-sm">{error}</p>
         ) : projects.length === 0 ? (
           <p className="text-[var(--muted)]">
             No projects yet. <Link href="/projects/new" className="text-[var(--accent)] hover:underline">Create one</Link> to add papers.
