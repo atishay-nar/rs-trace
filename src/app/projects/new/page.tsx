@@ -25,15 +25,21 @@ export default function NewProject() {
           description: description.trim() || undefined,
         }),
       });
-      const data = await res.json();
+      let data: { error?: string };
+      try {
+        data = await res.json();
+      } catch {
+        setError(res.ok ? "Invalid response" : `Error ${res.status}. Check Vercel logs.`);
+        return;
+      }
       if (res.ok) {
         router.push("/");
         router.refresh();
       } else {
         setError(data.error ?? "Something went wrong");
       }
-    } catch {
-      setError("Network error. Try again.");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Network error. Try again.");
     } finally {
       setLoading(false);
     }

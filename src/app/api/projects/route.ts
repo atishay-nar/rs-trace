@@ -6,13 +6,22 @@ export const dynamic = "force-dynamic";
 type RouteParams = { params: Promise<{ id: string }> };
 
 export async function GET() {
-  const projects = await prisma.project.findMany({
-    orderBy: { createdAt: "desc" },
-  });
-  return NextResponse.json(projects);
+  try {
+    const projects = await prisma.project.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    return NextResponse.json(projects);
+  } catch (e) {
+    console.error("GET /api/projects:", e);
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : "Database error" },
+      { status: 500 }
+    );
+  }
 }
 
 export async function POST(request: Request) {
+  try {
     const body = (await request.json()) as { name?: string; description?: string };
     const name = body?.name?.trim();
     if (!name) {
@@ -25,4 +34,9 @@ export async function POST(request: Request) {
       },
     });
     return NextResponse.json(project);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Database error";
+    console.error("POST /api/projects:", e);
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
+}
