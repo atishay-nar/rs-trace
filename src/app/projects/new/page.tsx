@@ -8,11 +8,13 @@ export default function NewProject() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) return;
+    setError(null);
     setLoading(true);
     try {
       const res = await fetch("/api/projects", {
@@ -23,7 +25,15 @@ export default function NewProject() {
           description: description.trim() || undefined,
         }),
       });
-      if (res.ok) router.push("/");
+      const data = await res.json();
+      if (res.ok) {
+        router.push("/");
+        router.refresh();
+      } else {
+        setError(data.error ?? "Something went wrong");
+      }
+    } catch {
+      setError("Network error. Try again.");
     } finally {
       setLoading(false);
     }
@@ -41,6 +51,8 @@ export default function NewProject() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">New project</h1>
       </div>
+
+      {error && <p className="text-sm text-red-500">{error}</p>}
 
       <form onSubmit={handleSubmit} className="space-y-8 max-w-xl">
         <div>
