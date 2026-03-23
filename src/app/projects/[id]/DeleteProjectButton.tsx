@@ -13,7 +13,7 @@ export function DeleteProjectButton({ projectId }: { projectId: string }) {
     <button
       type="button"
       onClick={handleDelete}
-      className="text-sm text-red-500 hover:text-red-600"
+      className="px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--card)] text-sm text-red-500 hover:border-red-400 hover:text-red-600 transition-colors"
     >
       Delete project
     </button>

@@ -20,77 +20,89 @@ export default async function PaperPage({ params }: Props) {
   const relevanceExplanation = firstProject?.relevanceExplanation ?? paper.relevanceExplanation;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       <Link
         href="/"
         className="inline-flex items-center gap-1 text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
       >
         ← Back
       </Link>
-      <header className="pb-6 border-b border-[var(--border)]">
-        <h1 className="text-2xl font-semibold tracking-tight leading-tight">{paper.title ?? "Untitled"}</h1>
-        {authorsFormatted && <p className="text-[var(--muted)] mt-2">{authorsFormatted}</p>}
-        <p className="text-sm text-[var(--muted)] mt-1">{paper.source}</p>
-      </header>
-      {paper.projects.length > 0 && (
-        <div className="p-4 rounded-lg border border-[var(--border)] bg-[var(--card)]">
-          <p className="text-sm font-medium text-[var(--muted)]">Projects</p>
-          <ul className="text-sm mt-1 space-y-1">
-            {paper.projects.map((pp) => (
-              <li key={pp.projectId}>
-                <Link
-                  href={`/projects/${pp.projectId}`}
-                  className="text-[var(--accent)] hover:underline"
-                >
-                  {pp.project.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      {firstProject?.project?.description && (
-        <div className="p-4 rounded-lg border border-[var(--border)] bg-[var(--card)]">
-          <p className="text-sm font-medium text-[var(--muted)]">Project description</p>
-          <p className="text-sm mt-1">{firstProject.project.description}</p>
-        </div>
-      )}
-      {relevanceScore != null && (
-        <div className="p-4 rounded-lg border border-[var(--border)] bg-[var(--card)]">
-          <p className="font-medium">Relevance: {relevanceScore}/10</p>
-          {relevanceExplanation && (
-            <p className="text-sm text-[var(--muted)] mt-1 italic">{relevanceExplanation}</p>
+
+      <article className="space-y-8">
+        <header className="pb-6 border-b border-[var(--divide)]">
+          <h1 className="text-2xl font-semibold tracking-tight leading-tight">
+            {paper.title ?? "Untitled"}
+          </h1>
+          {authorsFormatted && (
+            <p className="text-[var(--muted)] mt-2">{authorsFormatted}</p>
+          )}
+          <p className="text-sm text-[var(--muted)] mt-1">{paper.source}</p>
+        </header>
+
+        {paper.projects.length > 0 && (
+          <section>
+            <p className="text-sm font-medium text-[var(--muted)] mb-2">Projects</p>
+            <ul className="text-sm space-y-1">
+              {paper.projects.map((pp) => (
+                <li key={pp.projectId}>
+                  <Link
+                    href={`/projects/${pp.projectId}`}
+                    className="text-[var(--accent)] hover:underline"
+                  >
+                    {pp.project.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {firstProject?.project?.description && (
+          <section>
+            <p className="text-sm font-medium text-[var(--muted)] mb-2">Project focus</p>
+            <p className="text-sm">{firstProject.project.description}</p>
+          </section>
+        )}
+
+        {relevanceScore != null && (
+          <section>
+            <p className="font-medium">Relevance: {relevanceScore}/10</p>
+            {relevanceExplanation && (
+              <p className="text-sm text-[var(--muted)] mt-1 italic">{relevanceExplanation}</p>
+            )}
+          </section>
+        )}
+
+        {paper.abstract && (
+          <section>
+            <p className="text-sm font-medium text-[var(--muted)] mb-2">Abstract</p>
+            <p className="text-sm leading-relaxed">{paper.abstract}</p>
+          </section>
+        )}
+
+        <div className="flex flex-wrap gap-4 pt-2">
+          {paper.url && (
+            <a
+              href={paper.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[var(--accent)] hover:underline text-sm font-medium"
+            >
+              View paper
+            </a>
+          )}
+          {paper.pdfUrl && (
+            <a
+              href={paper.pdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[var(--accent)] hover:underline text-sm font-medium"
+            >
+              PDF
+            </a>
           )}
         </div>
-      )}
-      {paper.abstract && (
-        <div className="p-4 rounded-lg border border-[var(--border)] bg-[var(--card)]">
-          <h2 className="text-sm font-medium text-[var(--muted)] mb-2">Abstract</h2>
-          <p className="text-sm leading-relaxed">{paper.abstract}</p>
-        </div>
-      )}
-      <div className="flex flex-wrap gap-4 pt-2">
-        {paper.url && (
-          <a
-            href={paper.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[var(--accent)] hover:underline text-sm font-medium"
-          >
-            View paper
-          </a>
-        )}
-        {paper.pdfUrl && (
-          <a
-            href={paper.pdfUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[var(--accent)] hover:underline text-sm font-medium"
-          >
-            PDF
-          </a>
-        )}
-      </div>
+      </article>
     </div>
   );
 }

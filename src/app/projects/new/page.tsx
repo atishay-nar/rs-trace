@@ -30,19 +30,21 @@ export default function NewProject() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       <Link
         href="/"
         className="inline-flex items-center gap-1 text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
       >
         ← Back
       </Link>
+
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">New project</h1>
       </div>
-      <form onSubmit={handleSubmit} className="space-y-5">
+
+      <form onSubmit={handleSubmit} className="space-y-8 max-w-xl">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium mb-2">
+          <label htmlFor="name" className="block text-sm font-medium text-[var(--muted)] mb-1">
             Name
           </label>
           <input
@@ -51,12 +53,12 @@ export default function NewProject() {
             placeholder="Project name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--card)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+            className="w-full py-2.5 bg-transparent border-0 border-b border-[var(--divide)] focus:outline-none focus:border-[var(--accent)] transition-colors placeholder:text-[var(--muted)]"
           />
         </div>
         <div>
-          <label htmlFor="description" className="block text-sm font-medium mb-2">
-            Description (used for relevance extraction)
+          <label htmlFor="description" className="block text-sm font-medium text-[var(--muted)] mb-1">
+            Description <span className="font-normal">(used for relevance extraction)</span>
           </label>
           <textarea
             id="description"
@@ -64,7 +66,7 @@ export default function NewProject() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={4}
-            className="w-full px-4 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--card)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] resize-y"
+            className="w-full px-0 py-2.5 bg-transparent border-0 border-b border-[var(--divide)] focus:outline-none focus:border-[var(--accent)] transition-colors placeholder:text-[var(--muted)] resize-y"
           />
         </div>
         <button

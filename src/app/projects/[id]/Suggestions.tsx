@@ -60,43 +60,37 @@ export function Suggestions({ projectId }: { projectId: string }) {
   const canAdd = (s: Suggestion) => s.arxivId ?? s.doi;
 
   return (
-    <section>
-      <h2 className="text-lg font-medium text-[var(--muted)] mb-4">Suggestions</h2>
+    <section className="pt-6 border-t border-[var(--divide)]">
       <button
         onClick={fetchSuggestions}
         disabled={loading}
-        className="px-4 py-2 rounded-lg border border-[var(--border)] bg-[var(--card)] hover:border-[var(--muted)] disabled:opacity-50 transition-colors text-sm font-medium"
+        className="text-sm font-medium text-[var(--accent)] hover:underline disabled:opacity-50"
       >
-        {loading ? "Loading..." : "Get suggestions"}
+        {loading ? "Loading..." : "Suggested papers"}
       </button>
-      {error && (
-        <p className="text-sm text-red-500 mt-2">{error}</p>
-      )}
+      {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
       {suggestions.length > 0 && (
-        <ul className="space-y-3 mt-4">
+        <ul className="divide-y divide-[var(--divide)] mt-6">
           {suggestions.map((s) => (
-            <li
-              key={s.title + (s.arxivId ?? s.doi ?? "")}
-              className="p-4 rounded-lg border border-[var(--border)] bg-[var(--card)]"
-            >
+            <li key={s.title + (s.arxivId ?? s.doi ?? "")} className="py-5">
               <a
                 href={s.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium hover:text-[var(--accent)] transition-colors"
+                className="font-medium hover:text-[var(--accent)] transition-colors block"
               >
                 {s.title}
               </a>
               {s.authors && (
-                <p className="text-sm text-[var(--muted)] mt-1">{s.authors}</p>
+                <p className="text-sm text-[var(--muted)] mt-0.5">{s.authors}</p>
               )}
               <button
                 type="button"
                 onClick={() => addToProject(s)}
                 disabled={!canAdd(s) || addingId === s.title}
-                className="mt-2 text-sm px-3 py-1.5 rounded bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] disabled:opacity-50 transition-colors"
+                className="mt-2 text-sm text-[var(--accent)] hover:underline font-medium disabled:opacity-50"
               >
-                {addingId === s.title ? "Adding..." : "Add to project"}
+                {addingId === s.title ? "Adding..." : "+ Add to project"}
               </button>
             </li>
           ))}
