@@ -51,7 +51,7 @@ export default function AddPaperToProject() {
 
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Add paper</h1>
-        <p className="text-[var(--muted)] mt-1">Enter a DOI or arXiv ID.</p>
+        <p className="text-[var(--muted)] mt-1">Enter a DOI, arXiv ID, or arXiv URL.</p>
       </div>
 
       {error && <p className="text-sm text-red-500">{error}</p>}
@@ -64,7 +64,7 @@ export default function AddPaperToProject() {
           <input
             id="doi"
             type="text"
-            placeholder="e.g. 10.1234/example or 2301.12345"
+            placeholder="e.g. 10.1234/example, https://doi.org/10.1002/..., or https://arxiv.org/pdf/..."
             value={doiInput}
             onChange={(e) => setDoiInput(e.target.value)}
             className="w-full py-2.5 bg-transparent border-0 border-b border-[var(--divide)] focus:outline-none focus:border-[var(--accent)] transition-colors placeholder:text-[var(--muted)]"
