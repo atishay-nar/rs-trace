@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getRecommendations } from "@/lib/semantic-scholar";
+import { RELEVANCE_THRESHOLD } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
 
@@ -13,8 +14,12 @@ export async function GET(_req: Request, { params }: RouteParams) {
       include: { papers: { include: { paper: true } } },
     });
     if (!project) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    const highRelevance = project.papers.filter(
+        pp => (pp.relevanceScore ?? pp.paper.relevanceScore ?? 0) >= RELEVANCE_THRESHOLD
+    );
+    const source = highRelevance.length > 0 ? highRelevance : project.papers;
     const positiveIds: string[] = [];
-    for (const pp of project.papers.slice(0, 10)) {
+    for (const pp of source.slice(0, 10)) {
       const p = pp.paper;
       if (p.arxivId) positiveIds.push(`ArXiv:${p.arxivId}`);
       else if (p.doi) positiveIds.push(`DOI:${p.doi}`);

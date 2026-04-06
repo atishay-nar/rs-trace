@@ -1,9 +1,48 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { extractRelevance } from "@/lib/extract-relevance";
 
 export const dynamic = "force-dynamic";
 
 type RouteParams = { params: Promise<{ id: string; paperId: string }> };
+
+export async function PATCH(req: Request, { params }: RouteParams) {
+  const { id: projectId, paperId } = await params;
+  const { feedback } = await req.json() as { feedback: boolean };
+
+  const link = await prisma.projectPaper.findUnique({
+    where: { projectId_paperId: { projectId, paperId } },
+    include: { paper: true },
+  });
+
+  const updateData: { feedback: boolean; relevanceExplanation?: string; relevanceScore?: number } = { feedback };
+
+  if (feedback === true && link && !link.relevanceExplanation) {
+    const project = await prisma.project.findUnique({ where: { id: projectId } });
+    if (project?.description) {
+      try {
+        const rel = await extractRelevance(
+          project.description,
+          link.paper.title ?? "Untitled",
+          link.paper.abstract,
+          true
+        );
+        if (rel?.explanation) {
+          updateData.relevanceExplanation = rel.explanation;
+          updateData.relevanceScore = rel.score;
+        }
+      } catch (e) {
+        console.error("Relevance extraction failed:", e);
+      }
+    }
+  }
+
+  await prisma.projectPaper.update({
+    where: { projectId_paperId: { projectId, paperId } },
+    data: updateData,
+  });
+  return new Response(null, { status: 204 });
+}
 
 export async function DELETE(_req: Request, { params }: RouteParams) {
   const { id: projectId, paperId } = await params;

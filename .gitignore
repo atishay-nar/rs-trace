@@ -46,6 +46,7 @@ AGENTS.md
 CLAUDE.md
 .cursor/*
 RAG
+/.claude/
 
 # for pdfs
 /uploads/

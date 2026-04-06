@@ -43,6 +43,7 @@ model ProjectPaper {
   paperId               String
   relevanceScore        Float?
   relevanceExplanation  String?
+  feedback              Boolean?
   addedAt               DateTime @default(now())
   project               Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   paper                 Paper    @relation(fields: [paperId], references: [id], onDelete: Cascade)
