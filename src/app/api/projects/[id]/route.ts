@@ -1,12 +1,24 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
 
 export const dynamic = "force-dynamic";
 
 type RouteParams = { params: Promise<{ id: string }> };
 
 export async function DELETE(_req: Request, { params }: RouteParams) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { id } = await params;
+
+  const project = await prisma.project.findUnique({ where: { id } });
+  if (!project || project.userId !== session.user.id) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
   try {
     const links = await prisma.projectPaper.findMany({
       where: { projectId: id },
@@ -23,9 +35,7 @@ export async function DELETE(_req: Request, { params }: RouteParams) {
       }
     }
 
-    await prisma.project.delete({
-      where: { id },
-    });
+    await prisma.project.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: "Project not found" }, { status: 404 });

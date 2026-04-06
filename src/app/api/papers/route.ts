@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { resolvePaper } from "@/lib/resolve-paper";
 import { extractRelevance } from "@/lib/extract-relevance";
+import { auth } from "@/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -14,10 +15,15 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+    const session = await auth();
+    if (!session?.user?.id) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = (await request.json()) as { input?: string; projectId?: string };
     const input = body?.input?.trim();
     const projectId = body?.projectId?.trim();
-  
+
     if (!input) {
       return NextResponse.json(
         { error: "Enter a DOI or a arXiv ID" },
@@ -30,16 +36,21 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-  
+
     try {
       const resolved = await resolvePaper(input);
-  
+
+      // Verify the project belongs to the current user
+      const project = await prisma.project.findUnique({ where: { id: projectId } });
+      if (!project || project.userId !== session.user.id) {
+        return NextResponse.json({ error: "Project not found" }, { status: 404 });
+      }
+
       const existing = resolved.doi
         ? await prisma.paper.findFirst({ where: { doi: resolved.doi } })
         : await prisma.paper.findFirst({ where: { arxivId: resolved.arxivId! } });
-  
+
       if (existing) {
-        // Paper exists: create ProjectPaper only (add to project)
         const alreadyInProject = await prisma.projectPaper.findUnique({
           where: { projectId_paperId: { projectId, paperId: existing.id } },
         });
@@ -49,15 +60,12 @@ export async function POST(request: Request) {
             { status: 409 }
           );
         }
-  
+
         await prisma.projectPaper.create({
           data: { projectId, paperId: existing.id },
         });
-  
-        const project = await prisma.project.findUnique({
-          where: { id: projectId },
-        });
-        if (project?.description) {
+
+        if (project.description) {
           try {
             const rel = await extractRelevance(
               project.description,
@@ -78,15 +86,14 @@ export async function POST(request: Request) {
             console.error("Relevance extraction failed:", e);
           }
         }
-  
+
         const updated = await prisma.paper.findUnique({
           where: { id: existing.id },
           include: { projects: { include: { project: true } } },
         });
         return NextResponse.json(updated);
       }
-  
-      // New paper: create Paper + ProjectPaper
+
       const paper = await prisma.paper.create({
         data: {
           title: resolved.title,
@@ -99,15 +106,12 @@ export async function POST(request: Request) {
           url: resolved.url,
         },
       });
-  
+
       await prisma.projectPaper.create({
         data: { projectId, paperId: paper.id },
       });
-  
-      const project = await prisma.project.findUnique({
-        where: { id: projectId },
-      });
-      if (project?.description) {
+
+      if (project.description) {
         try {
           const rel = await extractRelevance(
             project.description,
@@ -128,7 +132,7 @@ export async function POST(request: Request) {
           console.error("Relevance extraction failed:", e);
         }
       }
-  
+
       const withProjects = await prisma.paper.findUnique({
         where: { id: paper.id },
         include: { projects: { include: { project: true } } },
