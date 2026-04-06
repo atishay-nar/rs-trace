@@ -1,13 +1,26 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { extractRelevance } from "@/lib/extract-relevance";
+import { auth } from "@/auth";
 
 export const dynamic = "force-dynamic";
 
 type RouteParams = { params: Promise<{ id: string; paperId: string }> };
 
+async function assertOwnership(projectId: string, userId: string) {
+  const project = await prisma.project.findUnique({ where: { id: projectId } });
+  return project?.userId === userId ? project : null;
+}
+
 export async function PATCH(req: Request, { params }: RouteParams) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const { id: projectId, paperId } = await params;
+  const project = await assertOwnership(projectId, session.user.id);
+  if (!project) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
   const { feedback } = await req.json() as { feedback: boolean };
 
   const link = await prisma.projectPaper.findUnique({
@@ -18,8 +31,7 @@ export async function PATCH(req: Request, { params }: RouteParams) {
   const updateData: { feedback: boolean; relevanceExplanation?: string; relevanceScore?: number } = { feedback };
 
   if (feedback === true && link && !link.relevanceExplanation) {
-    const project = await prisma.project.findUnique({ where: { id: projectId } });
-    if (project?.description) {
+    if (project.description) {
       try {
         const rel = await extractRelevance(
           project.description,
@@ -45,7 +57,14 @@ export async function PATCH(req: Request, { params }: RouteParams) {
 }
 
 export async function DELETE(_req: Request, { params }: RouteParams) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const { id: projectId, paperId } = await params;
+  const project = await assertOwnership(projectId, session.user.id);
+  if (!project) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
   try {
     const link = await prisma.projectPaper.findUnique({
       where: { projectId_paperId: { projectId, paperId } },
