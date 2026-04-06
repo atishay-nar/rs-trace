@@ -82,8 +82,37 @@ async function fetchFromCrossRef(doi: string): Promise<ResolvedPaper> {
     };
 }
     async function fetchFromArxiv(id: string): Promise<ResolvedPaper> {
-        const res = await fetch(`https://export.arxiv.org/api/query?id_list=${encodeURIComponent(id)}`);
-        if (!res.ok) throw new Error("arXiv request failed");
+        // Use Semantic Scholar to avoid arXiv API rate limits on cloud IPs
+        const ssRes = await fetch(
+          `https://api.semanticscholar.org/graph/v1/paper/ArXiv:${encodeURIComponent(id)}?fields=title,authors,abstract,externalIds`,
+        );
+        if (ssRes.ok) {
+          const data = (await ssRes.json()) as {
+            title?: string;
+            abstract?: string;
+            authors?: Array<{ name?: string }>;
+            externalIds?: { DOI?: string; ArXiv?: string };
+          };
+          const arxivId = data.externalIds?.ArXiv ?? id;
+          const doi = data.externalIds?.DOI ?? null;
+          const authors = (data.authors ?? []).map((a) => a.name ?? "").filter(Boolean);
+          return {
+            title: data.title ?? "Unknown",
+            authors: JSON.stringify(authors),
+            abstract: data.abstract ?? null,
+            doi,
+            arxivId,
+            source: "arxiv",
+            pdfUrl: `https://arxiv.org/pdf/${arxivId}.pdf`,
+            url: `https://arxiv.org/abs/${arxivId}`,
+          };
+        }
+
+        // Fall back to arXiv API
+        const res = await fetch(`https://export.arxiv.org/api/query?id_list=${encodeURIComponent(id)}`, {
+          headers: { "User-Agent": "rs-trace/1.0 (research paper tracker)" },
+        });
+        if (!res.ok) throw new Error(`arXiv request failed (${res.status})`);
         const xml = await res.text();
         const titles = xml.match(/<title>([^<]+)<\/title>/g) ?? [];
         const paperTitle = titles[1] ? titles[1].replace(/<\/?title>/g, "").trim() : "Unknown";
