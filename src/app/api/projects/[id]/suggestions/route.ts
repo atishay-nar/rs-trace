@@ -2,25 +2,18 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getRecommendations } from "@/lib/semantic-scholar";
 import { RELEVANCE_THRESHOLD } from "@/lib/constants";
-import { auth } from "@/auth";
 
 export const dynamic = "force-dynamic";
 
 type RouteParams = { params: Promise<{ id: string }> };
 
 export async function GET(_req: Request, { params }: RouteParams) {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
     const { id } = await params;
     const project = await prisma.project.findUnique({
       where: { id },
       include: { papers: { include: { paper: true } } },
     });
-    if (!project || project.userId !== session.user.id) {
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
-    }
+    if (!project) return NextResponse.json({ error: "Not found" }, { status: 404 });
     const highRelevance = project.papers.filter(
         pp => (pp.relevanceScore ?? pp.paper.relevanceScore ?? 0) >= RELEVANCE_THRESHOLD
     );
@@ -49,3 +42,5 @@ export async function GET(_req: Request, { params }: RouteParams) {
         .slice(0, 5);
     return NextResponse.json(filtered);
 }
+
+

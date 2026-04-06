@@ -1,18 +1,33 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
+type Project = {
+  id: string;
+  name: string;
+  description: string | null;
+};
 
-export default async function Home() {
-  const session = await auth();
-  if (!session?.user?.id) redirect("/signin");
+export default function Home() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const projects = await prisma.project.findMany({
-    where: { userId: session.user.id },
-    orderBy: { createdAt: "desc" },
-  });
+  useEffect(() => {
+    fetch("/api/projects")
+      .then((r) => r.json().then((data) => ({ ok: r.ok, data })))
+      .then(({ ok, data }) => {
+        if (ok && Array.isArray(data)) {
+          setProjects(data);
+          setError(null);
+        } else {
+          setError((data as { error?: string })?.error ?? "Failed to load");
+        }
+      })
+      .catch(() => setError("Network error"))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <div className="space-y-10">
@@ -28,7 +43,11 @@ export default async function Home() {
 
       <section>
         <h2 className="text-lg font-medium text-[var(--muted)] mb-4">Projects</h2>
-        {projects.length === 0 ? (
+        {loading ? (
+          <p className="text-[var(--muted)]">Loading...</p>
+        ) : error ? (
+          <p className="text-red-500 text-sm">{error}</p>
+        ) : projects.length === 0 ? (
           <p className="text-[var(--muted)]">
             No projects yet. <Link href="/projects/new" className="text-[var(--accent)] hover:underline">Create one</Link> to add papers.
           </p>
