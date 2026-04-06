@@ -5,9 +5,9 @@ Track papers as you do research. Organize them into projects, score them for rel
 ## What it does
 
 - **Add papers** by DOI, arXiv ID, or URL — metadata is fetched automatically from CrossRef and arXiv
-- **Relevance scoring** — papers are scored against your project description using OpenAI embeddings; high-scoring papers surface at the top, low-scoring ones fold into "Other papers"
-- **Suggestions** — recommends related papers via Semantic Scholar based on your most relevant papers
-- **Mark relevant** — manually promote a paper from "Other papers" and it gets a relevance blurb generated for it
+- **Relevance scoring** — papers are scored against your project description using OpenAI embeddings and sorted by relevance; every paper gets a blurb explaining why it's relevant
+- **Sort** — toggle between sorting by relevance or by date added
+- **Suggestions** — recommends related papers via Semantic Scholar, available once you have at least one high-relevance paper
 
 ## Stack
 

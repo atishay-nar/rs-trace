@@ -62,7 +62,8 @@ export async function POST(request: Request) {
             const rel = await extractRelevance(
               project.description,
               existing.title ?? "Untitled",
-              existing.abstract
+              existing.abstract,
+              true
             );
             if (rel) {
               await prisma.projectPaper.update({
@@ -111,7 +112,8 @@ export async function POST(request: Request) {
           const rel = await extractRelevance(
             project.description,
             paper.title ?? "Untitled",
-            paper.abstract
+            paper.abstract,
+            true
           );
           if (rel) {
             await prisma.projectPaper.update({

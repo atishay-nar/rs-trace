@@ -12,7 +12,7 @@ type Suggestion = {
   url: string;
 };
 
-export function Suggestions({ projectId }: { projectId: string }) {
+export function Suggestions({ projectId, hasHighRelevance }: { projectId: string; hasHighRelevance: boolean }) {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -58,6 +58,8 @@ export function Suggestions({ projectId }: { projectId: string }) {
   }
 
   const canAdd = (s: Suggestion) => s.arxivId ?? s.doi;
+
+  if (!hasHighRelevance) return null;
 
   return (
     <section className="pt-6 border-t border-[var(--divide)]">
