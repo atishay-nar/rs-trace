@@ -1,8 +1,7 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { RELEVANCE_THRESHOLD } from "@/lib/constants";
-import { auth } from "@/auth";
 import { Suggestions } from "./Suggestions";
 import { DeleteProjectButton } from "./DeleteProjectButton";
 import { PaperList } from "./PaperList";
@@ -12,16 +11,13 @@ export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ id: string }> };
 
 export default async function ProjectPage({ params }: Props) {
-  const session = await auth();
-  if (!session?.user?.id) redirect("/api/auth/signin");
-
   const { id } = await params;
   const project = await prisma.project.findUnique({
     where: { id },
     include: { papers: { include: { paper: true } } },
   });
 
-  if (!project || project.userId !== session.user.id) notFound();
+  if (!project) notFound();
 
   const hasHighRelevance = project.papers.some(pp => {
     const score = pp.relevanceScore ?? pp.paper.relevanceScore ?? -1;
