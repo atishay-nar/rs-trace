@@ -3,6 +3,9 @@
   "name": "rs-trace",
   "version": "1.0",
   "description": "Add research papers to your rs-trace projects",
+  "background": {
+    "service_worker": "background.js"
+  },
   "permissions": ["activeTab", "storage"],
   "host_permissions": [
     "https://rs-trace.vercel.app/*"

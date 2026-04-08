@@ -19,6 +19,10 @@ function detectPaper() {
   return null;
 }
 
+// Notify background to set/clear badge on page load
+const paperUrl = detectPaper();
+chrome.runtime.sendMessage({ type: paperUrl ? "PAPER_DETECTED" : "NO_PAPER" });
+
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   if (msg.type === "GET_PAPER_URL") {
     sendResponse({ url: detectPaper() });
